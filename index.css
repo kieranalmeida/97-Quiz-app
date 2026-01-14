@@ -1,4 +1,64 @@
 body {
     margin: 0;
     padding: 0;
+    background-color: #F5F7FB;
+    font-family: "Inter", sans-serif;
+}
+
+/* Start page */
+
+.start-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 20%;
+    height: 100vh;
+    margin: auto;
+    color: #293264;
+}
+
+.start-page-title {
+    font-family: "Karla", sans-serif;
+    font-size: 1.95rem;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.start-page-desc {
+    font-size: 1rem;
+    margin-top: 0;
+    margin-bottom: 29px;
+    font-weight: 400;
+}
+
+.start-btn {
+    color: #F5F7FB;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    width: 193px;
+    padding: 16px 0;
+    background-color: #4D5B9E;
+    border: 1px solid #000000;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.start-btn:hover {
+    background-color: rgb(93, 106, 171);
+}
+
+.blob-top {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 420px;
+}
+
+.blob-bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 420px;
 }

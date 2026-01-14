@@ -6,6 +6,10 @@
   <title>Quizzical</title>
   <!-- CSS -->
   <link rel="stylesheet" href="index.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
   <!-- Meta -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,7 +17,16 @@
 
 <body>
   <div id="root"></div>
-  <script type="module" src="App.jsx"></script>
+  <script type="module" src="index.jsx"></script>
 </body>
 
 </html>
+
+<!-- 
+// [X] App opens on start page, transitions to quiz when start button is clicked (only returns to start on refresh?)
+// Get 5 random questions from OTDB and render them https://opentdb.com/api_config.php
+// Use html-entities to decode questions where necessary https://www.npmjs.com/package/html-entities#user-content-decodetext-options
+// Create a new array for each question containing all of the answers, with the correct answer at a random index
+// Limit answer choice to 1 (use form with radio inputs, style radio inputs to look like buttons)
+// On submit, the correct answers turn green and the incorrect answers turn red, and a tally is provided at the bottom along with a start again button to generate new questions
+-->
