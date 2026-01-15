@@ -24,9 +24,11 @@
 
 <!-- 
 // [X] App opens on start page, transitions to quiz when start button is clicked (only returns to start on refresh?)
-// Get 5 random questions from OTDB and render them https://opentdb.com/api_config.php
-// Use html-entities to decode questions where necessary https://www.npmjs.com/package/html-entities#user-content-decodetext-options
-// Create a new array for each question containing all of the answers, with the correct answer at a random index
-// Limit answer choice to 1 (use form with radio inputs, style radio inputs to look like buttons)
-// On submit, the correct answers turn green and the incorrect answers turn red, and a tally is provided at the bottom along with a start again button to generate new questions
+// [X] Fetch 5 random questions from OTDB when the website loads, store them somewhere (state) so they can be accessed outside of the fetch, add a way to restart the quiz and handle quiz submission https://opentdb.com/api_config.php https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple
+// The four answers should all be stored in a new array, with the correct answer being placed at a random index (how to check which answers are correct on submit?)
+// Iterate through the stored data, and for each question, create a H2 element with four radio inputs containing each of the four potential answers from the new answer array
+// The completed HTML should then be placed inside the form element in main
+// Limit the answer choice for each question to 1 using radio input grouping and style the radio inputs to look like buttons
+// Once the HTML is complete, decode the questions using html-entities so that the text shows up properly once they are rendered https://www.npmjs.com/package/html-entities#user-content-decodetext-options
+// On form submit, the correct answers turn green and the incorrect answers turn red, and a tally appears at the bottom along with a button to restart the quiz and generate new questions 
 -->
