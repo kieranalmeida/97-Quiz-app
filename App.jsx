@@ -30,13 +30,6 @@ export default function App() {
             console.error(`There was an error fetching the data: ${error}`)
         }
     }
-    
-    // Iterate through each question and create a H2 element for each one
-    const questionsHtml = allQuestions.map( ({question}) => {
-        return (
-            <h2>{question}</h2>
-        )
-    })
 
     console.log("Results below")
     console.log(allQuestions)
@@ -53,12 +46,14 @@ export default function App() {
                 <>
                     <label 
                         htmlFor={`answer-${incorrect_answers.indexOf(answer)}`}
+                        className="answer-label"
                     >
-                        {answer}
+                        {decode(answer)}
                     </label>
 
                     <input 
-                        id={`answer-${incorrect_answers.indexOf(answer)}`} 
+                        id={`answer-${incorrect_answers.indexOf(answer)}`}
+                        className="answer-radio"
                         type="radio" 
                         name={`answerSet-${index + 1}`} 
                         required
@@ -71,17 +66,20 @@ export default function App() {
 
     console.log(allAnswersHtml)
 
-    const allHtml = questionsHtml.map( (question, index) => {
+    const allHtml = allQuestions.map( ({question}, index) => {
         return (
             <>
-                {question}
-                {allAnswersHtml[index]}
+                <h2 className="question">{decode(question)}</h2>
+                <div className="answer-container">
+                    {allAnswersHtml[index]}
+                </div>
             </>
         )
     })
 
-    // Use index parameter to match the questions to each answer set
-    // Render each chunk of HTML in the form if the quiz is not over
+    // If the quiz is not over, highlight selected answers in blue
+    // If the quiz is over, highlight all correct answers in green, incorrect answers in red (and fade them out), and fade out all other answers
+    // Reveal a tally of the correct answers in a <p> at the bottom next to the play again button when the quiz is submitted for the first time, and restart it the second time
 
     // Handles quiz submission
     function handleQuizSubmit(e) {
@@ -96,20 +94,22 @@ export default function App() {
     return (
         <>
         {page == "start" &&
-            <main className="start-page">
+            <main className="start-container">
                 <h1 className="start-page-title">Quizzical</h1>
                 <h2 className="start-page-desc">Answer 5 random trivia questions</h2>
                 <button className="start-btn" onClick={startQuiz}>Start quiz</button>
-                <img className="blob-top" src="images/blob-top.png"></img>
-                <img className="blob-bottom" src="images/blob-bottom.png"></img>
+                <img className="start-blob-top" src="images/blob-top.png"></img>
+                <img className="start-blob-bottom" src="images/blob-bottom.png"></img>
             </main>}
 
         {page == "quiz" &&
-            <main className="quiz-page">
+            <main className="quiz-container">
                 <form onSubmit={handleQuizSubmit}>
                     {allHtml}
-                    <button>{isQuizOver ? "Play again" : "Check answers"}</button>
+                    <button className="form-submit">{isQuizOver ? "Play again" : "Check answers"}</button>
                 </form>
+                <img className="quiz-blob-top" src="images/blob-top.png"></img>
+                <img className="quiz-blob-bottom" src="images/blob-bottom.png"></img>
             </main>}
         </>
     )
