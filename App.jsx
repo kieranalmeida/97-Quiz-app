@@ -1,5 +1,7 @@
 import React from "react"
+import { Fragment } from "react"
 import { decode } from "html-entities"
+import { clsx } from "clsx"
 
 export default function App() {
     // Controls the page
@@ -8,6 +10,12 @@ export default function App() {
     const [isQuizOver, setIsQuizOver] = React.useState(false)
     // Stores the 5 random questions obtained from OTDB
     const [allQuestions, setAllQuestions] = React.useState([])
+    // Store the selected answers to each question (each index holds the one answer for each answer set)
+    const [selectedAnswers, setSelectedAnswers] = React.useState(["placeholder", "placeholder", "placeholder", "placeholder", "placeholder"])
+    // Store the correct answers to each question
+    const correctAnswers = allQuestions.map( ({correct_answer}) => {
+        return correct_answer
+    })
 
     // Automatically start the quiz once only
     React.useEffect( () => {
@@ -16,80 +24,125 @@ export default function App() {
     
     // Starts or restarts the quiz when called. 5 random questions are obtained from OTDB and the results are stored in state
     function startQuiz() {
-        try {
             fetch("https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple")
                 .then(res => res.json() )
                 .then(data => {
-                    setAllQuestions(data.results)
+                    const questionsAndAnswers = data.results.map( (question) => {     
+
+                        // Contains each question, its three incorrect answers and the correct answer separately solely to obtain the correctAnswers array
+                        const questionObject = {
+                            question: question.question,
+                            answers: [...question.incorrect_answers],
+                            correct_answer: question.correct_answer
+                        }
+                        
+                        // Get a random index from 0 up to the length of incorrect_answers + 1, rounded down
+                        const randomIndex = Math.floor(Math.random() * (question.incorrect_answers.length + 1) )
+                        // Insert the correct answer into the random index
+                        questionObject.answers.splice(randomIndex, 0, question.correct_answer)
+
+                        return questionObject
+                    })
+
+                    setAllQuestions(questionsAndAnswers)
                     setIsQuizOver(false)
-                    console.log("Data obtained")
-                    console.log(data)
+                    console.log("Data obtained: ", questionsAndAnswers)
                 })
-        }
-        catch(error) {
-            console.error(`There was an error fetching the data: ${error}`)
-        }
+                .catch( (error) => {
+                    console.error(`There was an error fetching the data: ${error}`)
+                })
     }
 
-    console.log("Results below")
-    console.log(allQuestions)
+    // Add an answer to selectedAnswers
+    function selectAnswer(answer, answerSetNum) {
+        setSelectedAnswers( (prevSelectedAnswers) => {
+            const newAnswers = [...prevSelectedAnswers]
+            newAnswers[answerSetNum] = answer
+            return newAnswers
+        })
+    }
 
-    const allAnswersHtml = allQuestions.map( ({incorrect_answers, correct_answer}, index) => {
-        // Get a random index up to the length of incorrect_answers + 1
-        const randomIndex = Math.floor(Math.random() * incorrect_answers.length + 1)
-        // Insert the correct answer into incorrect_answers at the random index
-        incorrect_answers.splice(randomIndex, 0, correct_answer)
+    console.log("Selected answers: ", selectedAnswers)
+
+    // Dynamic class for each answer radio label
+    function getAnswerClass(answer, answerSetNum) {
+        return clsx({
+            // Quiz is not over and the answer is the one chosen for the current answer set (apply blue background)
+            selected: !isQuizOver && selectedAnswers[answerSetNum] === answer,
+            // Quiz is over and the answer is the correct one for the current answer set (regardless if it is in selectedAnswers too) (apply green background)
+            correct: isQuizOver && correctAnswers[answerSetNum] === answer,
+            // Quiz is over and the answer is not the correct one for the current answer set but is chosen (apply red background + fade out)
+            incorrect: isQuizOver && correctAnswers[answerSetNum] !== answer && selectedAnswers[answerSetNum] === answer,
+            // Quiz is over and the answer is  not the correct one for the current answer set and is not chosen (apply grey background + fade out)
+            other: isQuizOver && correctAnswers[answerSetNum] !== answer && !selectedAnswers[answerSetNum] === answer
+        })
+    }
+
+    // Get HTML for each answer set
+    const allAnswersHtml = allQuestions.map( ({answers}, index) => {
+        // Gets the number of the current answer set (from 0-4)
+        const answerSetNum = index
 
         // Get a label and radio input for each of the four answers inside each answer set
-        return incorrect_answers.map( (answer) => {
+        return answers.map( (answer) => {
             return (
-                <>
+                <Fragment
+                    key={answer}
+                >
                     <label 
-                        htmlFor={`answer-${incorrect_answers.indexOf(answer)}`}
-                        className="answer-label"
+                        htmlFor={`answer-${answerSetNum}-${answers.indexOf(answer)}`}
+                        className={"answer-label " + getAnswerClass(answer, answerSetNum)}
                     >
                         {decode(answer)}
                     </label>
 
-                    <input 
-                        id={`answer-${incorrect_answers.indexOf(answer)}`}
+                    <input
+                        id={`answer-${answerSetNum}-${answers.indexOf(answer)}`}
                         className="answer-radio"
                         type="radio" 
                         name={`answerSet-${index + 1}`} 
+                        onChange={() => selectAnswer(answer, answerSetNum)}
                         required
+                        disabled={isQuizOver}
                     >
                     </input>
-                </>
+                </Fragment>
             )
         })
     })
 
-    console.log(allAnswersHtml)
-
+    // Creates the HTML containing each question and matching answer set
     const allHtml = allQuestions.map( ({question}, index) => {
         return (
-            <>
+            <Fragment
+                key={`answerSet-${index + 1}`} 
+            >
                 <h2 className="question">{decode(question)}</h2>
                 <div className="answer-container">
                     {allAnswersHtml[index]}
                 </div>
-            </>
+            </Fragment>
         )
     })
-
-    // If the quiz is not over, highlight selected answers in blue
-    // If the quiz is over, highlight all correct answers in green, incorrect answers in red (and fade them out), and fade out all other answers
-    // Reveal a tally of the correct answers in a <p> at the bottom next to the play again button when the quiz is submitted for the first time, and restart it the second time
 
     // Handles quiz submission
     function handleQuizSubmit(e) {
         e.preventDefault()
         console.log("Quiz submitted")
 
+        // If the quiz is over, the submit button changes to "play again" and can now be clicked to restart the quiz
         if (isQuizOver) {
-            // If submitted and quiz is over, restart the quiz
+            startQuiz()
+            return
         }
+
+        // Sets quiz state to over on first submit, causing state re-render and revealing correct answers. 
+        setIsQuizOver(!isQuizOver)
     }
+
+    // Reveal a tally of the correct answers in a <p> at the bottom next to the play again button when the quiz is submitted for the first time, and restart it the second time
+    // Put all correct answers in an array, display amount of correct answers in selected answers
+    // Organise
 
     return (
         <>
