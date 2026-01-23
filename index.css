@@ -73,7 +73,6 @@ body {
     width: 60%;
     height: 100vh;
     margin: auto;
-    /* border: 1px dotted grey; */
 }
 
 .question {
@@ -143,7 +142,6 @@ body {
 }
 
 .form-submit {
-    /* display: block; */
     color: #F5F7FB;
     font-family: inherit;
     font-size: 0.64rem;
