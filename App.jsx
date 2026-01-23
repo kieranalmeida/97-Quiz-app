@@ -1,7 +1,7 @@
 import React from "react"
 import { Fragment } from "react"
-import { decode } from "html-entities"
 import { clsx } from "clsx"
+import { decode } from "html-entities"
 
 export default function App() {
     // Controls the page
@@ -22,9 +22,9 @@ export default function App() {
         startQuiz()
     }, [])
     
-    // Starts or restarts the quiz when called. 5 random questions are obtained from OTDB and the results are stored in state
+    // Starts or restarts the quiz when called. 5 random questions are obtained from OTDB and the necessary data is stored in state
     function startQuiz() {
-            fetch("https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple")
+            fetch("https://opentdb.com/api.php?amount=5&type=multiple")
                 .then(res => res.json() )
                 .then(data => {
                     const questionsAndAnswers = data.results.map( (question) => {     
@@ -53,7 +53,7 @@ export default function App() {
                 })
     }
 
-    // Add an answer to selectedAnswers
+    // Add an answer to selectedAnswers. Each answerSetNum targets the corresponding index in selectedAnswers, allowing only one selected answer for each answer set
     function selectAnswer(answer, answerSetNum) {
         setSelectedAnswers( (prevSelectedAnswers) => {
             const newAnswers = [...prevSelectedAnswers]
@@ -67,14 +67,16 @@ export default function App() {
     // Dynamic class for each answer radio label
     function getAnswerClass(answer, answerSetNum) {
         return clsx({
+            // Quiz is not over and the answer is not chosen but is being hovered over (apply lighter blue border from selected styling)
+            unselected: !isQuizOver && selectedAnswers[answerSetNum] !== answer,
             // Quiz is not over and the answer is the one chosen for the current answer set (apply blue background)
             selected: !isQuizOver && selectedAnswers[answerSetNum] === answer,
-            // Quiz is over and the answer is the correct one for the current answer set (regardless if it is in selectedAnswers too) (apply green background)
+            // Quiz is over and the answer is the correct one for the current answer set, regardless if was the one chosen or not (apply green background)
             correct: isQuizOver && correctAnswers[answerSetNum] === answer,
             // Quiz is over and the answer is not the correct one for the current answer set but is chosen (apply red background + fade out)
             incorrect: isQuizOver && correctAnswers[answerSetNum] !== answer && selectedAnswers[answerSetNum] === answer,
             // Quiz is over and the answer is  not the correct one for the current answer set and is not chosen (apply grey background + fade out)
-            other: isQuizOver && correctAnswers[answerSetNum] !== answer && !selectedAnswers[answerSetNum] === answer
+            other: isQuizOver && correctAnswers[answerSetNum] !== answer && selectedAnswers[answerSetNum] !== answer
         })
     }
 
@@ -136,13 +138,9 @@ export default function App() {
             return
         }
 
-        // Sets quiz state to over on first submit, causing state re-render and revealing correct answers. 
+        // Sets quiz state to over on first submit, causing state re-render and revealing correct answers. On second submit, the quiz is restarted by the above
         setIsQuizOver(!isQuizOver)
     }
-
-    // Reveal a tally of the correct answers in a <p> at the bottom next to the play again button when the quiz is submitted for the first time, and restart it the second time
-    // Put all correct answers in an array, display amount of correct answers in selected answers
-    // Organise
 
     return (
         <>
@@ -159,7 +157,12 @@ export default function App() {
             <main className="quiz-container">
                 <form onSubmit={handleQuizSubmit}>
                     {allHtml}
-                    <button className="form-submit">{isQuizOver ? "Play again" : "Check answers"}</button>
+                    <div className="form-end-container">
+                        {isQuizOver && <p className="quiz-tally">You scored {
+                            selectedAnswers.filter( (answer) => correctAnswers.includes(answer) ).length
+                            }/5 correct answers</p>}
+                        <button className="form-submit">{isQuizOver ? "Play again" : "Check answers"}</button>
+                    </div>
                 </form>
                 <img className="quiz-blob-top" src="images/blob-top.png"></img>
                 <img className="quiz-blob-bottom" src="images/blob-bottom.png"></img>

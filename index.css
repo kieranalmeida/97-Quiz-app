@@ -97,6 +97,10 @@ body {
     cursor: pointer;
 }
 
+.unselected:hover, .unselected:focus {
+    border: 1px solid #D6DBF5;
+}
+
 .selected {
     background-color: #D6DBF5;
     border: 1px solid #D6DBF5;
@@ -125,13 +129,26 @@ body {
     display: none
 }
 
+.form-end-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.quiz-tally {
+    color: #293264;
+    font-size: 12.8px;
+    font-weight: bold;
+}
+
 .form-submit {
-    display: block;
+    /* display: block; */
     color: #F5F7FB;
     font-family: inherit;
     font-size: 0.64rem;
     font-weight: 600;
-    margin: 30px auto;
+    margin: 30px 0;
     padding: 11px 22px;
     background-color: #4D5B9E;
     border: none;
