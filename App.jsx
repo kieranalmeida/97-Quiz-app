@@ -149,8 +149,8 @@ export default function App() {
                 <h1 className="start-page-title">Quizzical</h1>
                 <h2 className="start-page-desc">Answer 5 random trivia questions</h2>
                 <button className="start-btn" onClick={startQuiz}>Start quiz</button>
-                <img className="start-blob-top" src="images/blob-top.png"></img>
-                <img className="start-blob-bottom" src="images/blob-bottom.png"></img>
+                <img className="start-blob-top" src="/images/blob-top.png"></img>
+                <img className="start-blob-bottom" src="/images/blob-bottom.png"></img>
             </main>}
 
         {page == "quiz" &&
@@ -164,8 +164,8 @@ export default function App() {
                         <button className="form-submit">{isQuizOver ? "Play again" : "Check answers"}</button>
                     </div>
                 </form>
-                <img className="quiz-blob-top" src="images/blob-top.png"></img>
-                <img className="quiz-blob-bottom" src="images/blob-bottom.png"></img>
+                <img className="quiz-blob-top" src="/images/blob-top.png"></img>
+                <img className="quiz-blob-bottom" src="/images/blob-bottom.png"></img>
             </main>}
         </>
     )
